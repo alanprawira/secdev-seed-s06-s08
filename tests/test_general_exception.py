@@ -11,11 +11,9 @@ def test_error_query():
     assert resp_long.status_code == 500
 
 
-
 def test_http_exception_passthrough():
 """
-Negative test: check that the HTTPException isn't caught by the shared handler
-and is returned with the status/details raised in the endpoint.
+Negative test: check that the HTTPException isn't caught by the shared handler,
 If your endpoint uses a different path or code, replace it here.
 """
     resp = client.get("/test_httpexception")
