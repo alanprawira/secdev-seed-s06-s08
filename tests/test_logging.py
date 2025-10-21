@@ -1,6 +1,11 @@
-def test_logging_hide_password():
+from fastapi.testclient import TestClient
+from app.main import app
+import os
 
-    import os
+client = TestClient(app, raise_server_exceptions=False)
+
+def test_logging_hide_password():
+    
     if os.path.exists('app.log'):
         os.remove('app.log')
     
@@ -11,3 +16,5 @@ def test_logging_hide_password():
 
     with open('app.log', 'r') as f:
         file = f.read()
+        # Optional: Tambahkan assertion untuk test
+        assert "pwd" not in file  # Pastikan password tidak kelihatan
