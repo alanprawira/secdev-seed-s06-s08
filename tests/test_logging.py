@@ -5,7 +5,7 @@ import os
 client = TestClient(app, raise_server_exceptions=False)
 
 def test_logging_hide_password():
-    # PASTIKAN file log ada (seperti di test yang berhasil)
+    # JANGAN hapus file log! Hanya buat jika tidak ada
     if not os.path.exists('app.log'):
         with open('app.log', 'w') as f:
             f.write("")  # Create empty log file
@@ -17,5 +17,5 @@ def test_logging_hide_password():
 
     with open('app.log', 'r') as f:
         file = f.read()
-        print(f"Log content: {file}")  # Debug print
+        print(f"Log content: {file}")
         assert "pwd" not in file
