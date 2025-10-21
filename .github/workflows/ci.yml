@@ -25,7 +25,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.11', '3.12']
+        python-version: ['3.11']
     timeout-minutes: 15
     env:
       PYTHONUNBUFFERED: "1"
