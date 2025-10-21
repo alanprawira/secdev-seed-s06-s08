@@ -41,13 +41,18 @@ def echo(request: Request, msg: str | None = None):
 @app.get("/search")
 def search(q: str | None = None):
     if q:
-
-        if len(q) > 20 or "'" in q or "\"" in q or ";" in q:
+        # SQL injection: return empty results
+        if "'" in q or "\"" in q or ";" in q:
+            return JSONResponse(content={"items": []})
+        
+        # return HTTP 400 error
+        if len(q) > 20:
             raise HTTPException(
                 status_code=HTTP_400_BAD_REQUEST, 
-                detail="Invalid search query"
+                detail="Request string too long"
             )
         
+        # Normal search
         sql = "SELECT id, name, description FROM items WHERE name LIKE ? LIMIT 10"
         items = query(sql, (f"%{q}%",))
     else:
