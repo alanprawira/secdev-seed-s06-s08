@@ -1,7 +1,6 @@
-
 {% extends "base.html" %}
 {% block content %}
   <h1>Echo</h1>
-  <div id="message">{{ message }}</div>
+  <div id="message">{{ message }}</div>  <!-- safe filter -->
   <p>Попробуйте: <code>/echo?msg=&lt;script&gt;alert(1)&lt;/script&gt;</code></p>
 {% endblock %}

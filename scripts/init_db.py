@@ -1,3 +1,4 @@
+
 import sqlite3
 from pathlib import Path
 
@@ -27,7 +28,6 @@ INSERT OR IGNORE INTO items (id, name, description) VALUES
 (3, 'carrot', 'orange and crunchy');
 """
 
-
 def main():
     conn = sqlite3.connect(DB_PATH)
     try:
@@ -36,7 +36,6 @@ def main():
         print(f"DB initialized at {DB_PATH}")
     finally:
         conn.close()
-
 
 if __name__ == "__main__":
     main()
