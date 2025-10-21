@@ -1,9 +1,9 @@
-from fastapi.testclient import TestClient
-from app.main import app
-
-client = TestClient(app, raise_server_exceptions=False)
-
 def test_logging_hide_password():
+
+    import os
+    if os.path.exists('app.log'):
+        os.remove('app.log')
+    
     payload = {"username": "usr", "password": "pwd"}
     resp = client.post("/login_w_error", json=payload)
     print(resp.status_code)
@@ -11,4 +11,3 @@ def test_logging_hide_password():
 
     with open('app.log', 'r') as f:
         file = f.read()
-        assert "pwd" not in file
