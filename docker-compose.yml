@@ -1,4 +1,3 @@
-
 services:
   web:
     build: .
@@ -8,9 +7,24 @@ services:
       - "8000:8000"
     environment:
       - APP_NAME=secdev-seed
-      - DEBUG=true
+      - DEBUG=false  # Security: Disable debug in production
+    # —— Security: Container hardening ————————————————————————————
+    user: "appuser"  # Run as non-root user
+    read_only: true  # Read-only root filesystem
+    security_opt:
+      - no-new-privileges:true  # Prevent privilege escalation
+    tmpfs:  # Writable temporary directories
+      - /tmp
+      - /var/tmp
+    # —— Healthcheck ——————————————————————————————————————————————
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
+      interval: 30s  # More reasonable interval
+      timeout: 10s
+      retries: 3
+      start_period: 40s  # Give app time to start
+    # —— Volumes for evidence and solutions ———————————————————————
+    volumes:
+      - ./solutions:/app/solutions:rw
+      - ./EVIDENCE:/app/EVIDENCE:rw
+      - ./logs:/app/logs:rw
