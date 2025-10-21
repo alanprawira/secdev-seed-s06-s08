@@ -1,21 +1,23 @@
-from fastapi.testclient import TestClient
-from app.main import app
-import os
-
-client = TestClient(app, raise_server_exceptions=False)
-
 def test_logging_hide_password():
-
     if not os.path.exists('app.log'):
-        with open('app.log', 'w') as f:
-            f.write("")  
+        with open('app.log', 'w', encoding='utf-8') as f:  # add encoding
+            f.write("")
     
     payload = {"username": "usr", "password": "pwd"}
     resp = client.post("/login_w_error", json=payload)
     print(resp.status_code)
     assert resp.status_code == 500
 
-    with open('app.log', 'r') as f:
-        file = f.read()
-        print(f"Log content: {file}")
-        assert "pwd" not in file
+    # multiple encodings
+    encodings = ['utf-8', 'utf-16', 'latin-1']
+    file_content = ""
+    
+    for encoding in encodings:
+        try:
+            with open('app.log', 'r', encoding=encoding) as f:
+                file_content = f.read()
+            break
+        except UnicodeDecodeError:
+            continue
+    
+    assert "pwd" not in file_content
