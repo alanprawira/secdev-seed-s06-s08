@@ -5,10 +5,10 @@ import os
 client = TestClient(app, raise_server_exceptions=False)
 
 def test_logging_hide_password():
-    # JANGAN hapus file log! Hanya buat jika tidak ada
+
     if not os.path.exists('app.log'):
         with open('app.log', 'w') as f:
-            f.write("")  # Create empty log file
+            f.write("")  
     
     payload = {"username": "usr", "password": "pwd"}
     resp = client.post("/login_w_error", json=payload)
