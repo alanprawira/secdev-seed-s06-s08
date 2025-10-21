@@ -1,30 +1,50 @@
 services:
   web:
-    build: .
-    image: secdev-seed:latest
-    restart: unless-stopped
+    # Вариант 1: собираем из Dockerfile текущего проекта
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: secdev-seed
     ports:
-      - "8000:8000"
+      - "8000:8000"     # host:container
     environment:
-      - APP_NAME=secdev-seed
-      - DEBUG=false  # Security: Disable debug in production
-    # —— Security: Container hardening ————————————————————————————
-    user: "appuser"  # Run as non-root user
-    read_only: true  # Read-only root filesystem
-    security_opt:
-      - no-new-privileges:true  # Prevent privilege escalation
-    tmpfs:  # Writable temporary directories
-      - /tmp
-      - /var/tmp
-    # —— Healthcheck ——————————————————————————————————————————————
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
-      interval: 30s  # More reasonable interval
-      timeout: 10s
-      retries: 3
-      start_period: 40s  # Give app time to start
-    # —— Volumes for evidence and solutions ———————————————————————
-    volumes:
-      - ./solutions:/app/solutions:rw
-      - ./EVIDENCE:/app/EVIDENCE:rw
-      - ./logs:/app/logs:rw
+      # Значения берем из env/секретов платформы. Здесь - примерные дефолты.
+      APP_NAME: ${APP_NAME:-secdev-seed}
+      DEBUG: ${DEBUG:-true}
+      # SECRET_KEY: ${SECRET_KEY:?set in your local env or CI secrets}
+    # Если используются локальные .env, можно подключить:
+    # env_file:
+    #   - .env   # НЕ коммитить
+
+    # ===== Минимальный healthcheck без curl (python есть в образе) =====
+    # healthcheck:
+    #   test: ["CMD-SHELL", "python -c \"import urllib.request as u; u.urlopen('http://127.0.0.1:8000/').read()\""]
+    #   interval: 10s
+    #   timeout: 3s
+    #   retries: 5
+    #   start_period: 5s
+
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+    #   interval: 10s
+    #   timeout: 3s
+    #   retries: 5
+
+    # ===== Опциональные усиления рантайма (см. S07_hardening_cards) =====
+    # user: "10001:10001"         # если добавите non-root user в Dockerfile
+    # read_only: true             # включить только после настройки writable-точек
+    # cap_drop: ["ALL"]
+    # security_opt:
+    #   - no-new-privileges:true
+
+    # ===== Persist/readonly точки =====
+    # volumes:
+    #   - appdb:/app/app.db       # если нужно сохранять SQLite между перезапусками
+    #   - ./EVIDENCE:/app/EVIDENCE:rw   # осторожно: монтируйте осознанно
+
+    restart: unless-stopped
+
+# ===== Опциональные named volumes =====
+# volumes:
+#   appdb:
+#     name: ТУТ НУЖНА ТВОЯ ВСТАВКА

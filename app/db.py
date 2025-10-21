@@ -1,3 +1,4 @@
+
 import sqlite3
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -9,14 +10,23 @@ def get_conn() -> sqlite3.Connection:
     conn.row_factory = sqlite3.Row
     return conn
 
-def query(sql: str, params: tuple = ()) -> List[Dict[str, Any]]:
-    """FIXED: Now supports parameterized queries"""
+def query_one_params(sql: str, params: tuple):
+    with get_conn() as conn:
+        row = conn.execute(sql, params).fetchone()
+        return dict(row) if row else None
+
+def query_params(sql: str, params: tuple):
     with get_conn() as conn:
         rows = conn.execute(sql, params).fetchall()
         return [dict(r) for r in rows]
 
-def query_one(sql: str, params: tuple = ()) -> Optional[Dict[str, Any]]:
-    """FIXED: Now supports parameterized queries"""
+def query(sql: str) -> List[Dict[str, Any]]:
+    """НАМЕРЕННО НЕБЕЗОПАСНО: принимает сырую строку SQL."""
     with get_conn() as conn:
-        row = conn.execute(sql, params).fetchone()
+        rows = conn.execute(sql).fetchall()
+        return [dict(r) for r in rows]
+
+def query_one(sql: str) -> Optional[Dict[str, Any]]:
+    with get_conn() as conn:
+        row = conn.execute(sql).fetchone()
         return dict(row) if row else None

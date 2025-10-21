@@ -20,7 +20,9 @@ CREATE TABLE IF NOT EXISTS items (
 );
 
 INSERT OR IGNORE INTO users (id, username, password)
-VALUES (1, 'admin', 'admin');
+VALUES (1, 'admin', 'admin'),
+(2, 'adminadminadminadminadminadminadminadminadminadmin', 'admin');
+
 
 INSERT OR IGNORE INTO items (id, name, description) VALUES
 (1, 'apple', 'red and juicy'),
